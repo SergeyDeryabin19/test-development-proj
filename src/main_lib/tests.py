@@ -1,41 +1,43 @@
 from django.test import TestCase
-from models import Book
+from main_lib.models import Book, Author
 import unittest
 from django.test import Client
 from django.urls import reverse
 
-class BookTestCase(unittest.TestCase):
+class BookTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
+        self.author = Author.objects.create(author_name='Test Author')
+        self.book = Book.objects.create(book_title='Test Book')
+        self.book.authors.set([self.author])
 
-    def test_book_list(self):
-        response = self.client.get(reverse('book_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book_list.html')
-        self.assertContains(response, 'List of all books')
-        self.assertContains(response, 'Add book')
-
-    def test_add_book(self):
-        response = self.client.get(reverse('book_add'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'add_book.html')
-        # Здесь можно добавить дополнительные проверки для формы добавления книги
-
-    def test_edit_book(self):
-        book = Book.objects.create(book_title='Test Book')
-        url = reverse('book_update', args=[book.pk])
+    def test_book_list_view(self):
+        url = reverse('main_lib:book_view_all')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'edit_book.html')
-        # Здесь можно добавить дополнительные проверки для формы редактирования книги
+        self.assertContains(response, self.book.book_title)
 
-    def test_delete_book(self):
-        book = Book.objects.create(book_title='Test Book')
-        url = reverse('book_delete', args=[book.pk])
+    def test_book_create_view(self):
+        url = reverse('main_lib:book_add')
+        data = {'book_title': 'New Book', 'authors': self.author.pk}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Book.objects.filter(book_title='New Book').exists())
+
+    def test_book_detail_view(self):
+        url = reverse('main_lib:book_detail', args=[self.book.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'delete_book.html')
-        # Здесь можно добавить дополнительные проверки для формы удаления книги
+        self.assertContains(response, self.book.book_title)
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_book_update_view(self):
+        url = reverse('main_lib:book_update', args=[self.book.pk])
+        data = {'book_title': 'Updated Book', 'authors': self.author.pk}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Book.objects.filter(book_title='Updated Book').exists())
+
+    def test_book_delete_view(self):
+        url = reverse('main_lib:book_delete', args=[self.book.pk])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Book.objects.filter(book_title='Test Book').exists())
