@@ -1,0 +1,7 @@
+<h1>Hi all, please confirm deleting a book </h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+

@@ -1,0 +1,25 @@
+
+  <h1>List of all authors</h1>
+  <div> Чтобы добавить автора жамите   <a href="{% url 'main_lib:add_author' %}">Add author</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Author Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for object in object_list %}
+        <tr>
+          <td>{{ object.author_name }}</td>
+          <td>{{ object.author_description }}</td>
+          <td>
+            <a href="{% url 'main_lib:edit_author' pk=object.pk %}">Edit</a>
+            <a href="{% url 'main_lib:delete_author' pk=object.pk %}">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>

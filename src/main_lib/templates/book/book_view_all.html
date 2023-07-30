@@ -1,0 +1,27 @@
+<h1>List of all books</h1>
+<div>Чтобы добавить книгу, нажмите <a href="{% url 'main_lib:book_add' %}">Add book</a></div>
+<table style="border: 1px solid black; padding: 8px;">
+  <thead style="border: 1px solid black; padding: 8px;">
+    <tr>
+      <th style="border: 1px solid black; padding: 8px;">Book Name</th>
+      <th style="border: 1px solid black; padding: 8px;">Authors</th>
+      <th style="border: 1px solid black; padding: 8px;">Actions</th>
+    </tr>
+  </thead>
+  <tbody style="border: 1px solid black; padding: 8px;">
+    {% for object in object_list %}
+      <tr style="border: 1px solid black; padding: 8px;">
+        <td style="border: 1px solid black; padding: 8px;">{{ object.book_title }}</td>
+        <td style="border: 1px solid black; padding: 8px;">
+          {% for author in object.authors.all %}
+            {{ author.author_name }}<br>
+          {% endfor %}
+        </td>
+        <td style="border: 1px solid black; padding: 8px;">
+          <a href="{% url 'main_lib:book_update' pk=object.pk %}">Edit</a>
+          <a href="{% url 'main_lib:book_delete' pk=object.pk %}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
