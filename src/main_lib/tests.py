@@ -15,18 +15,21 @@ class BookTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.book.book_title)
+        print("THIRD CHECKPOINT", response, self.book.book_title)
 
     def test_book_create_view(self):
         url = reverse('main_lib:book_add')
-        data = {'book_title': 'New Book', 'authors': self.author.pk}
+        data = {'book_title': 'Test Book', 'authors': self.author.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(Book.objects.filter(book_title='New Book').exists())
+        self.assertTrue(Book.objects.filter(book_title='Test Book').exists())
 
     def test_book_detail_view(self):
         url = reverse('main_lib:book_detail', args=[self.book.pk])
         response = self.client.get(url)
+        print("SECCOND CHECKPOINT", response.content)
         self.assertEqual(response.status_code, 200)
+        print("FIRST CHECKPOINT", self.book.book_title)
         self.assertContains(response, self.book.book_title)
 
     def test_book_update_view(self):
